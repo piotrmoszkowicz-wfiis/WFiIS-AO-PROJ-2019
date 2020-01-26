@@ -10,9 +10,6 @@ numTrainFiles = 15;
 imdsTrain = transform(imdsTrain,@preprocess,'IncludeInfo',true);
 imdsValidation = transform(imdsValidation,@preprocess,'IncludeInfo',true);
 
-t = read(imdsTrain);
-imshow(t{1});
-
 layers = [
     imageInputLayer(imSize)
     

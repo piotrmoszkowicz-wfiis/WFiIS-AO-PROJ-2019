@@ -4,8 +4,9 @@ function [dataOut,info] = preprocess(im,info)
  im = imresize(im, imSize);
  im = double(im)/255;
  
- im = imBrightness(im, -0.5);
+ im = imBrightness(im, -0.2);
  im = imContrast(im, 2);
+ im = imGamma(im, 2);
 
  dataOut = {im,info.Label};
    
