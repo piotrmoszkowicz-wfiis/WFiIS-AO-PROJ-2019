@@ -1,13 +1,20 @@
 clear; clc;
 
+imSize = [600 800 3];
 imds = imageDatastore('images', 'LabelSource', 'foldernames', 'IncludeSubfolders',true);
 
 numTrainFiles = 15;
 
 [imdsTrain,imdsValidation] = splitEachLabel(imds,numTrainFiles,'randomize');
 
+imdsTrain = transform(imdsTrain,@preprocess,'IncludeInfo',true);
+imdsValidation = transform(imdsValidation,@preprocess,'IncludeInfo',true);
+
+t = read(imdsTrain);
+imshow(t{1});
+
 layers = [
-    imageInputLayer([600 800 3])
+    imageInputLayer(imSize)
     
     convolution2dLayer(3,8,'Padding','same')
     batchNormalizationLayer
@@ -31,7 +38,7 @@ layers = [
 ];
 
 options = trainingOptions('sgdm', ...
-    'ExecutionEnvironment','cpu', ... # suggestion to change to gpu or paralell, if you have suitable system
+    'ExecutionEnvironment','gpu', ... # suggestion to change to gpu or paralell, if you have suitable system
     'InitialLearnRate',0.01, ...
     'MaxEpochs',10, ...
     'Shuffle','every-epoch', ...
@@ -43,7 +50,7 @@ options = trainingOptions('sgdm', ...
 net = trainNetwork(imdsTrain,layers,options);
 
 YPred = classify(net,imdsValidation);
-YValidation = imdsValidation.Labels;
+YValidation = imdsValidation.UnderlyingDatastore.Labels;
 
 accuracy = sum(YPred == YValidation)/numel(YValidation);
 
